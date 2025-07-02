@@ -31,3 +31,1118 @@
     "eslint-config-next": "14.0.4"
   }
 }
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  images: {
+    domains: ['placeholder.svg'], // Updated domains list
+    formats: ['image/webp', 'image/avif'],
+    unoptimized: true,
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['lucide-react'],
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on'
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload'
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff'
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'SAMEORIGIN'
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block'
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'origin-when-cross-origin'
+          }
+        ],
+      },
+    ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap',
+      },
+      {
+        source: '/robots.txt',
+        destination: '/api/robots',
+      },
+    ]
+  },
+}
+
+export default nextConfig
+import type { Config } from "tailwindcss"
+
+const config: Config = {
+  darkMode: ["class"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+    "*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px",
+      },
+    },
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      fontFamily: {
+        playfair: ["var(--font-playfair)", "serif"],
+      },
+    },
+  },
+  plugins: [require("tailwindcss-animate")],
+}
+
+export default config
+{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "es6"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
+import { cva, type VariantProps } from "class-variance-authority"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        outline: "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        ghost: "hover:bg-accent hover:text-accent-foreground",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default: "h-10 px-4 py-2",
+        sm: "h-9 rounded-md px-3",
+        lg: "h-11 rounded-md px-8",
+        icon: "h-10 w-10",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  },
+)
+
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+}
+
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant, size, asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : "button"
+    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+  },
+)
+Button.displayName = "Button"
+
+export { Button, buttonVariants }
+import * as React from "react"
+
+import { cn } from "@/lib/utils"
+
+const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("rounded-lg border bg-card text-card-foreground shadow-sm", className)} {...props} />
+))
+Card.displayName = "Card"
+
+const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
+  ),
+)
+CardHeader.displayName = "CardHeader"
+
+const CardTitle = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLHeadingElement>>(
+  ({ className, ...props }, ref) => (
+    <h3 ref={ref} className={cn("text-2xl font-semibold leading-none tracking-tight", className)} {...props} />
+  ),
+)
+CardTitle.displayName = "CardTitle"
+
+const CardDescription = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
+  ({ className, ...props }, ref) => (
+    <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+  ),
+)
+CardDescription.displayName = "CardDescription"
+
+const CardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />,
+)
+CardContent.displayName = "CardContent"
+
+const CardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex items-center p-6 pt-0", className)} {...props} />
+  ),
+)
+CardFooter.displayName = "CardFooter"
+
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter, Playfair_Display } from "next/font/google"
+import "./globals.css"
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" })
+const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" })
+
+export const metadata: Metadata = {
+  title: "Good Soil Planner - Align Your Faith, Family & Fortune",
+  description:
+    "The 90-day journey planner that equips everyday believers with tools to live a life of purpose on purpose.",
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={`${inter.variable} ${playfair.variable} font-sans antialiased`}>{children}</body>
+    </html>
+  )
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.font-playfair {
+  font-family: var(--font-playfair);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+import { Navigation } from "@/components/navigation"
+import { HeroSection } from "@/components/hero-section"
+import { FeaturesSection } from "@/components/features-section"
+import { VideoSection } from "@/components/video-section"
+import { TestimonialsSection } from "@/components/testimonials-section"
+import { CTASection } from "@/components/cta-section"
+import { Footer } from "@/components/footer"
+
+export default function HomePage() {
+  return (
+    <div className="min-h-screen">
+      <Navigation />
+      <HeroSection />
+      <FeaturesSection />
+      <VideoSection />
+      <TestimonialsSection />
+      <CTASection />
+      <Footer />
+    </div>
+  )
+}
+"use client"
+
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Menu, X, ShoppingCart, User } from "lucide-react"
+
+export function Navigation() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <nav className="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
+                <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
+              </svg>
+            </div>
+            <div className="text-xl font-bold">
+              <span className="text-amber-600 font-playfair">GOOD SOIL</span>
+              <span className="text-blue-600 italic ml-1">planner</span>
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-8">
+            <Link href="/planner" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              The Planner
+            </Link>
+            <Link href="/resources" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Resources
+            </Link>
+            <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              About
+            </Link>
+            <Link href="/shop" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Shop
+            </Link>
+            <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
+              Contact
+            </Link>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button variant="ghost" size="sm">
+              <User className="h-4 w-4 mr-2" />
+              Sign In
+            </Button>
+            <Button variant="ghost" size="sm" className="relative">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Cart
+            </Button>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white">Get Started</Button>
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="sm" onClick={() => setIsOpen(!isOpen)}>
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <div className="md:hidden py-4 border-t border-gray-100">
+            <div className="flex flex-col space-y-4">
+              <Link href="/planner" className="text-gray-700 hover:text-blue-600 font-medium">
+                The Planner
+              </Link>
+              <Link href="/resources" className="text-gray-700 hover:text-blue-600 font-medium">
+                Resources
+              </Link>
+              <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
+                About
+              </Link>
+              <Link href="/shop" className="text-gray-700 hover:text-blue-600 font-medium">
+                Shop
+              </Link>
+              <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium">
+                Contact
+              </Link>
+              <div className="pt-4 border-t border-gray-100">
+                <Button variant="outline" className="w-full bg-transparent mb-2">
+                  Sign In
+                </Button>
+                <Button variant="outline" className="w-full bg-transparent mb-2">
+                  Cart
+                </Button>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Get Started</Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </nav>
+  )
+}
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Play, Star, ArrowRight } from "lucide-react"
+import Image from "next/image"
+
+export function HeroSection() {
+  return (
+    <section className="bg-gradient-to-br from-slate-50 via-blue-50 to-amber-50 py-16 lg:py-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Content */}
+          <div className="text-center lg:text-left">
+            <div className="inline-flex items-center bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              <span className="w-2 h-2 bg-blue-600 rounded-full mr-2"></span>
+              90-Day Transformation Journey
+            </div>
+
+            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight mb-6 font-playfair">
+              The Planner That Aligns Your <span className="text-blue-600">Faith</span>,{" "}
+              <span className="text-amber-600">Family</span> & <span className="text-emerald-600">Fortune</span>
+            </h1>
+
+            <p className="text-xl lg:text-2xl text-blue-600 font-semibold mb-4">One Simple Habit at a Time.</p>
+
+            <p className="text-lg text-gray-600 mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+              A 90-day Journey - Equipping everyday believers with the tools to live a life of purpose on purpose!
+            </p>
+
+            {/* Social Proof */}
+            <div className="flex items-center justify-center lg:justify-start space-x-4 mb-8">
+              <div className="flex items-center">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
+                ))}
+              </div>
+              <span className="text-gray-600">
+                <span className="font-semibold text-gray-900">4.9/5</span> from 2,000+ believers
+              </span>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button size="lg" className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg font-semibold">
+                Get The Good Soil Planner
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-gray-300 text-gray-700 px-8 py-4 text-lg bg-transparent"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Watch Video
+              </Button>
+            </div>
+
+            {/* Trust Indicators */}
+            <div className="mt-8 pt-8 border-t border-gray-200">
+              <p className="text-sm text-gray-500 mb-4">Trusted by believers worldwide</p>
+              <div className="flex items-center justify-center lg:justify-start space-x-6 text-gray-400">
+                <span className="text-sm">✓ 30-Day Money Back Guarantee</span>
+                <span className="text-sm">✓ Free Shipping</span>
+                <span className="text-sm">✓ Secure Checkout</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Image */}
+          <div className="relative">
+            <div className="relative bg-white rounded-3xl p-8 shadow-2xl transform rotate-2 hover:rotate-0 transition-transform duration-300">
+              <Image
+                src="/placeholder.svg?height=600&width=400"
+                alt="Good Soil Planner - Faith, Family & Fortune Journal"
+                width={400}
+                height={600}
+                className="w-full h-auto rounded-2xl"
+                priority
+              />
+              <div className="absolute -top-4 -right-4 bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-semibold shadow-lg">
+                Best Seller!
+              </div>
+            </div>
+
+            {/* Floating Elements */}
+            <div className="absolute -left-4 top-1/4 bg-blue-600 text-white p-3 rounded-full shadow-lg">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
+              </svg>
+            </div>
+            <div className="absolute -right-4 bottom-1/4 bg-amber-500 text-white p-3 rounded-full shadow-lg">
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7Z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+import { Card, CardContent } from "@/components/ui/card"
+import { Heart, Users, TrendingUp, BookOpen, Calendar, Target } from "lucide-react"
+
+export function FeaturesSection() {
+  const features = [
+    {
+      icon: Heart,
+      title: "Faith-Centered",
+      description:
+        "Daily devotionals and scripture reflections to strengthen your spiritual foundation and deepen your relationship with God.",
+      color: "blue",
+    },
+    {
+      icon: Users,
+      title: "Family-Focused",
+      description:
+        "Intentional planning tools to prioritize quality time, create meaningful traditions, and build stronger family bonds.",
+      color: "amber",
+    },
+    {
+      icon: TrendingUp,
+      title: "Fortune-Building",
+      description:
+        "Strategic goal-setting and financial stewardship principles to build lasting wealth while honoring biblical values.",
+      color: "emerald",
+    },
+    {
+      icon: BookOpen,
+      title: "90-Day Journey",
+      description:
+        "Structured daily pages that guide you through a transformative 90-day experience of intentional living.",
+      color: "purple",
+    },
+    {
+      icon: Calendar,
+      title: "Daily Planning",
+      description: "Comprehensive daily layouts that help you align your schedule with your values and priorities.",
+      color: "rose",
+    },
+    {
+      icon: Target,
+      title: "Goal Achievement",
+      description: "Proven frameworks for setting, tracking, and achieving meaningful goals in all areas of life.",
+      color: "indigo",
+    },
+  ]
+
+  const getColorClasses = (color: string) => {
+    const colors = {
+      blue: "bg-blue-100 text-blue-600",
+      amber: "bg-amber-100 text-amber-600",
+      emerald: "bg-emerald-100 text-emerald-600",
+      purple: "bg-purple-100 text-purple-600",
+      rose: "bg-rose-100 text-rose-600",
+      indigo: "bg-indigo-100 text-indigo-600",
+    }
+    return colors[color as keyof typeof colors] || colors.blue
+  }
+
+  return (
+    <section className="py-20 bg-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 font-playfair">
+            Why Choose Good Soil Planner?
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            More than just a planner - it's your companion for intentional living and spiritual growth
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <Card
+              key={index}
+              className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+            >
+              <CardContent className="p-8 text-center">
+                <div
+                  className={`w-16 h-16 ${getColorClasses(feature.color)} rounded-full flex items-center justify-center mx-auto mb-6`}
+                >
+                  <feature.icon className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">{feature.title}</h3>
+                <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+"use client"
+
+import { Button } from "@/components/ui/button"
+import { Play } from "lucide-react"
+import Image from "next/image"
+
+export function VideoSection() {
+  return (
+    <section className="bg-gray-900 text-white py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left - Video */}
+          <div className="relative">
+            <div className="relative aspect-video bg-gray-800 rounded-2xl overflow-hidden shadow-2xl">
+              <Image
+                src="/placeholder.svg?height=400&width=600"
+                alt="Founder Message - Living with Purpose"
+                width={600}
+                height={400}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                <button className="w-20 h-20 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all transform hover:scale-110">
+                  <Play className="w-8 h-8 text-gray-900 ml-1" />
+                </button>
+              </div>
+            </div>
+
+            {/* Video Stats */}
+            <div className="absolute -bottom-6 left-6 right-6 bg-white text-gray-900 rounded-lg p-4 shadow-lg">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-semibold">Watch Time: 8:42</span>
+                <span className="text-gray-600">50K+ Views</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right - Content */}
+          <div className="lg:pl-8">
+            <div className="inline-flex items-center bg-blue-900 text-blue-200 px-4 py-2 rounded-full text-sm font-medium mb-6">
+              Featured Message
+            </div>
+
+            <h3 className="text-3xl lg:text-4xl font-bold mb-6 font-playfair">
+              DO YOU WANT TO LIVE A LIFE OF PURPOSE?
+            </h3>
+
+            <p className="text-lg text-gray-300 leading-relaxed mb-8">
+              Join our founder as he shares the heart behind Good Soil Planner and how this simple tool can transform
+              your daily routine into a meaningful journey of growth, connecting your faith with practical life planning
+              for lasting impact.
+            </p>
+
+            <div className="space-y-4 mb-8">
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <span className="text-gray-300">Discover the power of intentional daily habits</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-amber-400 rounded-full"></div>
+                <span className="text-gray-300">Learn how to align your priorities with your values</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                <span className="text-gray-300">See real transformation stories from our community</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Play className="mr-2 h-5 w-5" />
+                Watch Full Message
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white text-white hover:bg-white hover:text-gray-900 bg-transparent"
+              >
+                Start Your Journey
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+import { Card, CardContent } from "@/components/ui/card"
+import { Star, Quote } from "lucide-react"
+import Image from "next/image"
+
+export function TestimonialsSection() {
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      role: "Mother of 3, Ministry Leader",
+      image: "/placeholder.svg?height=80&width=80",
+      rating: 5,
+      text: "The Good Soil Planner has completely transformed how I approach my daily routine. I finally feel like my faith, family time, and financial goals are all working together instead of competing for my attention.",
+    },
+    {
+      name: "Michael Chen",
+      role: "Business Owner, Father",
+      image: "/placeholder.svg?height=80&width=80",
+      rating: 5,
+      text: "As an entrepreneur, I was always focused on growing my business but neglecting my spiritual life. This planner helped me find the balance I was missing and actually improved my business results too.",
+    },
+    {
+      name: "Rebecca Martinez",
+      role: "Teacher, Small Group Leader",
+      image: "/placeholder.svg?height=80&width=80",
+      rating: 5,
+      text: "I've tried many planners before, but none addressed the whole person like this one does. The daily devotionals and family planning sections have been game-changers for our household.",
+    },
+  ]
+
+  return (
+    <section className="py-20 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 font-playfair">What Our Community Says</h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            Join thousands of believers who have transformed their lives with intentional planning
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-shadow bg-white">
+              <CardContent className="p-8">
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+
+                <Quote className="h-8 w-8 text-blue-200 mb-4" />
+
+                <p className="text-gray-700 leading-relaxed mb-6 italic">"{testimonial.text}"</p>
+
+                <div className="flex items-center">
+                  <Image
+                    src={testimonial.image || "/placeholder.svg"}
+                    alt={testimonial.name}
+                    width={48}
+                    height={48}
+                    className="rounded-full mr-4"
+                  />
+                  <div>
+                    <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                    <p className="text-sm text-gray-600">{testimonial.role}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Stats */}
+        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">2,000+</div>
+            <div className="text-gray-600">Happy Customers</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-amber-600 mb-2">4.9/5</div>
+            <div className="text-gray-600">Average Rating</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-emerald-600 mb-2">90</div>
+            <div className="text-gray-600">Day Journey</div>
+          </div>
+          <div>
+            <div className="text-3xl font-bold text-purple-600 mb-2">98%</div>
+            <div className="text-gray-600">Would Recommend</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+import { Button } from "@/components/ui/button"
+import { ArrowRight, Shield, Truck, RefreshCw } from "lucide-react"
+
+export function CTASection() {
+  return (
+    <section className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6 font-playfair">
+          Ready to Start Your 90-Day Journey?
+        </h2>
+        <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+          Join thousands of believers who are already living with greater purpose and intention. Transform your daily
+          routine into a meaningful journey of growth.
+        </p>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+          <Button size="lg" className="bg-amber-600 hover:bg-amber-700 text-white px-8 py-4 text-lg font-semibold">
+            Get Your Good Soil Planner Today
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
+          <Button
+            size="lg"
+            variant="outline"
+            className="border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg bg-transparent"
+          >
+            Learn More First
+          </Button>
+        </div>
+
+        {/* Trust Indicators */}
+        <div className="grid md:grid-cols-3 gap-8 max-w-3xl mx-auto">
+          <div className="flex items-center justify-center space-x-3 text-blue-100">
+            <Shield className="h-6 w-6" />
+            <span>30-Day Money Back Guarantee</span>
+          </div>
+          <div className="flex items-center justify-center space-x-3 text-blue-100">
+            <Truck className="h-6 w-6" />
+            <span>Free Shipping Worldwide</span>
+          </div>
+          <div className="flex items-center justify-center space-x-3 text-blue-100">
+            <RefreshCw className="h-6 w-6" />
+            <span>Lifetime Customer Support</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+import Link from "next/link"
+import { Facebook, Instagram, Twitter, Youtube, Mail } from "lucide-react"
+import { Button } from "@/components/ui/button"
+
+export function Footer() {
+  return (
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Brand */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z" />
+                  <path d="M12 16C12 16 8 18 8 22H16C16 18 12 16 12 16Z" />
+                </svg>
+              </div>
+              <div className="text-xl font-bold">
+                <span className="text-amber-400 font-playfair">GOOD SOIL</span>
+                <span className="text-blue-400 italic ml-1">planner</span>
+              </div>
+            </div>
+            <p className="text-gray-400 mb-6 leading-relaxed">
+              Aligning faith, family, and fortune through intentional daily habits and purposeful living.
+            </p>
+            <div className="flex space-x-4">
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                <Facebook className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                <Instagram className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                <Twitter className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white p-2">
+                <Youtube className="h-5 w-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Product */}
+          <div>
+            <h4 className="font-semibold text-white mb-6">Product</h4>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/planner" className="text-gray-400 hover:text-white transition-colors">
+                  The Planner
+                </Link>
+              </li>
+              <li>
+                <Link href="/features" className="text-gray-400 hover:text-white transition-colors">
+                  Features
+                </Link>
+              </li>
+              <li>
+                <Link href="/shop" className="text-gray-400 hover:text-white transition-colors">
+                  Shop
+                </Link>
+              </li>
+              <li>
+                <Link href="/pricing" className="text-gray-400 hover:text-white transition-colors">
+                  Pricing
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold text-white mb-6">Resources</h4>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/blog" className="text-gray-400 hover:text-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link href="/downloads" className="text-gray-400 hover:text-white transition-colors">
+                  Free Downloads
+                </Link>
+              </li>
+              <li>
+                <Link href="/videos" className="text-gray-400 hover:text-white transition-colors">
+                  Video Library
+                </Link>
+              </li>
+              <li>
+                <Link href="/community" className="text-gray-400 hover:text-white transition-colors">
+                  Community
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h4 className="font-semibold text-white mb-6">Support</h4>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/contact" className="text-gray-400 hover:text-white transition-colors">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="text-gray-400 hover:text-white transition-colors">
+                  FAQ
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping" className="text-gray-400 hover:text-white transition-colors">
+                  Shipping & Returns
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-400 hover:text-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Newsletter */}
+        <div className="border-t border-gray-800 mt-12 pt-12">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <h4 className="text-xl font-semibold text-white mb-2">Stay Connected</h4>
+              <p className="text-gray-400">
+                Get weekly inspiration, planning tips, and exclusive resources delivered to your inbox.
+              </p>
+            </div>
+            <div className="flex space-x-4">
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+              />
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white px-6">
+                <Mail className="h-4 w-4 mr-2" />
+                Subscribe
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom */}
+        <div className="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">© 2024 Good Soil Planner. All rights reserved.</p>
+          <div className="flex space-x-6 mt-4 md:mt-0">
+            <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Privacy Policy
+            </Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors">
+              Terms of Service
+            </Link>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
